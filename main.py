@@ -75,12 +75,20 @@ class Cell:
         y_top, y_bottom = self.top_bottom_y()
         if self.has_left_wall:
             self._win.draw_line(Line(Point(x_left, y_top), Point(x_left, y_bottom)), fill_color="black")
+        else:
+            self._win.draw_line(Line(Point(x_left, y_top), Point(x_left, y_bottom)), fill_color="white")
         if self.has_right_wall:
             self._win.draw_line(Line(Point(x_right, y_top), Point(x_right, y_bottom)), fill_color="black")
+        else:
+            self._win.draw_line(Line(Point(x_right, y_top), Point(x_right, y_bottom)), fill_color="white")
         if self.has_top_wall:
             self._win.draw_line(Line(Point(x_left, y_top), Point(x_right, y_top)), fill_color="black")
+        else:
+            self._win.draw_line(Line(Point(x_left, y_top), Point(x_right, y_top)), fill_color="white")
         if self.has_bottom_wall:
             self._win.draw_line(Line(Point(x_left, y_bottom), Point(x_right, y_bottom)), fill_color="black")
+        else:
+            self._win.draw_line(Line(Point(x_left, y_bottom), Point(x_right, y_bottom)), fill_color="white")
 
     def mid_point(self):
         x_left, x_right = self.left_right_x()
@@ -108,6 +116,7 @@ class Maze:
         self._win = win
         self._cells = []
         self._create_cells()
+        self._break_entrance_and_exit()
 
     def _create_cells(self):
         for i in range(self._num_cols):
@@ -134,6 +143,13 @@ class Maze:
         self._win.redraw()
         time.sleep(0.05)
 
+    def _break_entrance_and_exit(self):
+        top_cell = self._cells[0][0]
+        top_cell.has_top_wall = False
+        self._draw_cells(0, 0)
+        bottom_cell = self._cells[self._num_cols - 1][self._num_rows - 1]
+        bottom_cell.has_bottom_wall = False
+        self._draw_cells(self._num_cols - 1, self._num_rows - 1)
 
 def main():
     win = Window(800, 600)
@@ -144,7 +160,7 @@ def main():
     #c2 = Cell(Point(100, 135), Point(70, 200), window=win)
     #c2.draw_cell()
     #c2.draw_move(c1)
-    Maze(10, 20, 20, 10, 20, 20, win)
+    m = Maze(10, 20, 20, 10, 20, 20, win)
     win.wait_for_close()
 
 main()
