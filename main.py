@@ -43,7 +43,7 @@ class Line:
         canvas.pack()
 
 class Cell:
-    def __init__(self, point_1, point_2, window, left=True, right=True, top=True, bottom=True):
+    def __init__(self, point_1, point_2, window=None, left=True, right=True, top=True, bottom=True):
         self._x1 = point_1.x
         self._y1 = point_1.y
         self._x2 = point_2.x
@@ -92,7 +92,7 @@ class Cell:
         self._win.draw_line(Line(Point(c1_x_mid, c1_y_mid), Point(c2_x_mid, c2_y_mid)), fill_color=col)
 
 class Maze:
-    def __init__(self, x1, y1, num_rows, num_cols, cell_size_x, cell_size_y, win):
+    def __init__(self, x1, y1, num_rows, num_cols, cell_size_x, cell_size_y, win=None):
         self._x1 = x1
         self._y1 = y1
         self._num_rows = num_rows
