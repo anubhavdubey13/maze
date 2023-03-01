@@ -43,11 +43,11 @@ class Line:
         canvas.pack()
 
 class Cell:
-    def __init__(self, point_1, point_2, window=None, left=True, right=True, top=True, bottom=True):
-        self._x1 = point_1.x
-        self._y1 = point_1.y
-        self._x2 = point_2.x
-        self._y2 = point_2.y
+    def __init__(self, window=None, left=True, right=True, top=True, bottom=True):
+        self._x1 = None
+        self._y1 = None
+        self._x2 = None
+        self._y2 = None
         self._win = window
         self.has_left_wall = left
         self.has_right_wall = right
@@ -64,7 +64,13 @@ class Cell:
             return (self._y1, self._y2)
         return (self._y2, self._y1)
     
-    def draw_cell(self):
+    def draw_cell(self, x1, y1, x2, y2):
+        if self._win is None:
+            return
+        self._x1 = x1
+        self._x2 = x2
+        self._y1 = y1
+        self._y2 = y2
         x_left, x_right = self.left_right_x()
         y_top, y_bottom = self.top_bottom_y()
         if self.has_left_wall:
@@ -106,19 +112,23 @@ class Maze:
     def _create_cells(self):
         for i in range(self._num_cols):
             cols_cells = []
-            x_initial = self._x1 + (i * self._cell_size_x)
-            x_final = self._x1 + ((i+1) * self._cell_size_x)
             for j in range(self._num_rows):
-                y_initial = self._y1 + (j * self._cell_size_y)
-                y_final = self._y1 + ((j+1) * self._cell_size_y)
-                cell_instance = Cell(Point(x_initial, y_initial), Point(x_final, y_final), window=self._win)
-                cols_cells.append(cell_instance)
+                cols_cells.append(Cell(self._win))
             self._cells.append(cols_cells)
+        for i in range(self._num_cols):
+            for j in range(self._num_rows):
+                self._draw_cells(i, j)
+
+    def _draw_cells(self, i, j):
+        if self._win is None:
+            return
         
-        for cols in self._cells:
-            for c in cols:
-                c.draw_cell()
-                self._animate()
+        x_initial = self._x1 + (i * self._cell_size_x)
+        y_initial = self._y1 + (j * self._cell_size_y)
+        x_final = x_initial + self._cell_size_x
+        y_final = y_initial +  self._cell_size_y          
+        self._cells[i][j].draw_cell(x_initial, y_initial, x_final, y_final)     
+        self._animate()
 
     def _animate(self):
         self._win.redraw()
