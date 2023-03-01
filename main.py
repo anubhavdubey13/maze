@@ -67,20 +67,38 @@ class Cell:
         x_left, x_right = self.left_right_x()
         y_top, y_bottom = self.top_bottom_y()
         if self.has_left_wall:
-            self._win.draw_line(Line(Point(x_left, y_top), Point(x_left, y_bottom)), fill_color="red")
+            self._win.draw_line(Line(Point(x_left, y_top), Point(x_left, y_bottom)), fill_color="black")
         if self.has_right_wall:
-            self._win.draw_line(Line(Point(x_right, y_top), Point(x_right, y_bottom)), fill_color="red")
+            self._win.draw_line(Line(Point(x_right, y_top), Point(x_right, y_bottom)), fill_color="black")
         if self.has_top_wall:
-            self._win.draw_line(Line(Point(x_left, y_top), Point(x_right, y_top)), fill_color="red")
+            self._win.draw_line(Line(Point(x_left, y_top), Point(x_right, y_top)), fill_color="black")
         if self.has_bottom_wall:
-            self._win.draw_line(Line(Point(x_left, y_bottom), Point(x_right, y_bottom)), fill_color="red")
-        
+            self._win.draw_line(Line(Point(x_left, y_bottom), Point(x_right, y_bottom)), fill_color="black")
+
+    def mid_point(self):
+        x_left, x_right = self.left_right_x()
+        y_top, y_bottom = self.top_bottom_y()
+        x_mid = (x_right + x_left)/2
+        y_mid = (y_top + y_bottom)/2
+        return (x_mid, y_mid)
+    
+    def draw_move(self, to_cell, undo=False):
+        c1_x_mid, c1_y_mid = self.mid_point()
+        c2_x_mid, c2_y_mid = to_cell.mid_point()
+        if undo:
+            col = "gray"
+        col = "red"
+        self._win.draw_line(Line(Point(c1_x_mid, c1_y_mid), Point(c2_x_mid, c2_y_mid)), fill_color=col)
+
 def main():
     win = Window(800, 600)
     #win.draw_line(Line(Point(10,15), Point(8, 92)), fill_color="red")
     #win.draw_line(Line(Point(15,15), Point(92, 92)), fill_color="black")
-    c1 = Cell(Point(10, 35), Point(50, 70), window=win, right=False)
+    c1 = Cell(Point(10, 35), Point(50, 70), window=win)
     c1.draw_cell()
+    c2 = Cell(Point(100, 135), Point(70, 200), window=win)
+    c2.draw_cell()
+    c2.draw_move(c1)
     win.wait_for_close()
 
 main()
