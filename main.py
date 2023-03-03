@@ -1,5 +1,6 @@
 from tkinter import Tk, BOTH, Canvas
 import time
+import random
 
 class Window:
     def __init__(self, width, height):
@@ -53,6 +54,7 @@ class Cell:
         self.has_right_wall = right
         self.has_top_wall = top
         self.has_bottom_wall = bottom
+        self.visited = False
 
     def left_right_x(self):
         if self._x1 < self._x2:
@@ -106,7 +108,7 @@ class Cell:
         self._win.draw_line(Line(Point(c1_x_mid, c1_y_mid), Point(c2_x_mid, c2_y_mid)), fill_color=col)
 
 class Maze:
-    def __init__(self, x1, y1, num_rows, num_cols, cell_size_x, cell_size_y, win=None):
+    def __init__(self, x1, y1, num_rows, num_cols, cell_size_x, cell_size_y, win=None, seed=None):
         self._x1 = x1
         self._y1 = y1
         self._num_rows = num_rows
@@ -115,6 +117,8 @@ class Maze:
         self._cell_size_y = cell_size_y
         self._win = win
         self._cells = []
+        if seed != None:
+            random.seed(seed)
         self._create_cells()
         self._break_entrance_and_exit()
 
@@ -150,6 +154,44 @@ class Maze:
         bottom_cell = self._cells[self._num_cols - 1][self._num_rows - 1]
         bottom_cell.has_bottom_wall = False
         self._draw_cells(self._num_cols - 1, self._num_rows - 1)
+
+    def _break_walls_r(self, i, j):
+        current_cell = self._cells[i][j]
+        current_cell.visited = True
+
+        while True:
+            direction_tracker = []
+            if i > 0 and not self._cells[i-1][j].visited:
+                direction_tracker.append((i-1, j))
+            if i < self._num_cols-1 and not self._cells[i+1][j].visited:
+                direction_tracker.append((i+1, j))
+            if j > 0 and not self._cells[i][j-1].visited:
+                direction_tracker.append((i, j-1))
+            if j < self._num_rows - 1 and not self._cells[i][j+1].visited:
+                direction_tracker.append((i, j+1))
+            
+            if direction_tracker == []:
+                self._draw_cells(i, j)
+                return
+            else:
+                direction = random.randint(0, len(direction_tracker)-1)
+                i1, j1 = direction_tracker[direction]
+                if j == j1:
+                    if i > i1:
+                        current_cell.has_left_wall = False
+                        self._cells[i1][j].has_right_wall = False
+                    else:
+                        current_cell.has_right_wall = False
+                        self._cells[i1][j].has_left_wall = False
+                if i == i1:
+                    if j > j1:
+                        current_cell.has_top_wall = False
+                        self._cells[i][j1].has_bottom_wall = False
+                    else:
+                        current_cell.has_bottom_wall = False
+                        self._cells[i][j1].has_top_wall = False
+            
+            self._break_walls_r(i1, j1)
 
 def main():
     win = Window(800, 600)
